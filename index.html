@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A.B Electronic Shop</title>
+    <style>
+        body { margin: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; direction: rtl; display: flex; flex-direction: column; min-height: 100vh; }
+        .top-bar { background: #fff; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .top-bar img { height: 50px; }
+        .top-bar .buttons { display: flex; gap: 10px; }
+        .top-bar button { padding: 8px 16px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: .95em; }
+        .top-bar button#add-product-btn { display: none; }
+        h1 { text-align: center; margin: 20px 0; font-size: 2.2em; font-weight: bold; color: #000; }
+        .container { flex: 1; max-width: 1200px; margin: auto; padding: 0 15px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 20px; }
+        .card { position: relative; background: #fff; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card img { width:100%; height:auto; object-fit:cover; }
+        .card-content { padding:15px; flex:1; }
+        .product-name { font-size:1.2em; margin:0 0 10px; }
+        .product-desc { font-size:.95em; margin:0 0 15px; line-height:1.4; color:#555; }
+        .product-price { font-size:1.1em; font-weight:bold; margin-bottom:15px; color:#2c3e50; }
+        .action-row { display: flex; align-items: center; gap: 8px; }
+        .quantity-input { width: 50px; padding: 4px; font-size: .9em; text-align: center; border: 1px solid #ccc; border-radius: 4px; }
+        .buy-button { flex: 1; text-decoration:none; text-align:center; padding:10px 15px; border-radius:6px; background:#25d366; color:#fff; font-weight:bold; font-size: .9em; transition:background .2s; }
+        .buy-button:hover { background:#1da851; }
+        #add-product-form { display:none; max-width:400px; margin:20px auto; background:#fff; padding:15px; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1); }
+        #add-product-form input, #add-product-form textarea, #add-product-form button { width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px; font-size:.95em; }
+        #add-product-form button { background:#28a745; color:#fff; border:none; cursor:pointer; }
+        #add-product-form button:hover { background:#218838; }
+        .delete-btn { display:none; position:absolute; top:8px; right:8px; background:rgba(0,0,0,.6); color:#fff; border:none; border-radius:50%; width:24px; height:24px; font-size:16px; line-height:20px; cursor:pointer; }
+        .card.admin .delete-btn { display:block; }
+        footer { background: #f1f1f1; padding: 15px; text-align: center; font-size: .9em; }
+        .social-buttons { margin-top: 10px; }
+        .social-button { margin: 0 5px; text-decoration: none; display: inline-block; padding: 6px 12px; border-radius: 4px; background: #4267B2; color: #fff; font-size: .9em; }
+        .social-button.youtube { background: #FF0000; }
+        @media(max-width:600px){ h1{font-size:1.6em;} #add-product-form{width:90%;} .top-bar { flex-direction: column; gap:10px; } }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <img src="logo.jpeg" alt="شعاري">
+        <div class="buttons">
+            <button id="login-btn">تسجيل دخول</button>
+            <button id="add-product-btn">إضافة منتج</button>
+        </div>
+    </div>
+
+    <h1>A.B Electronic Shop</h1>
+
+    <div id="add-product-form">
+        <h2 style="text-align:center;">أضف منتجاً جديداً</h2>
+        <input type="file" id="img-file" accept="image/*" required>
+        <input type="text" id="prod-name" placeholder="اسم المنتج" required>
+        <textarea id="prod-desc" rows="3" placeholder="وصف المنتج" required></textarea>
+        <input type="text" id="prod-price" placeholder="السعر (مثال: 200 ج.م)" required>
+        <input type="text" id="whatsapp-number" placeholder="رقم واتساب دولي (مثال: 201550461829)" required>
+        <button id="save-product">حفظ المنتج</button>
+    </div>
+
+    <div class="container" id="products-container"></div>
+
+    <footer>
+        &copy; 2025 A.B Electronic  حقوق الطبع والنشر محفوظة لديّ
+        <div class="social-buttons">
+            <a href="https://www.facebook.com/ahmed.salah70635" target="_blank" class="social-button">فيسبوك</a>
+            <a href="https://www.youtube.com/@A.B-Electronic" target="_blank" class="social-button youtube">يوتيوب</a>
+        </div>
+    </footer>
+
+    <script>
+        const ADMIN_PASS = atob("SGVsbG9AV29ybGQ5MA=="); 
+        let isAdmin = false;
+        const loginBtn = document.getElementById('login-btn');
+        const addBtn   = document.getElementById('add-product-btn');
+        const form     = document.getElementById('add-product-form');
+        const saveBtn  = document.getElementById('save-product');
+        const imgInput = document.getElementById('img-file');
+        const container= document.getElementById('products-container');
+        let products = JSON.parse(localStorage.getItem('products')||'[]');
+
+        function createMessage(name, price, qty) {
+            const lines = [
+                'السلام عليكم،',
+                `أرغب في شراء المنتج: ${name}`,
+                `السعر: ${price}`,
+                `الكمية: ${qty}`
+            ];
+            return encodeURIComponent(lines.join('\n'));
+        }
+
+        function renderProducts() {
+            container.innerHTML = '';
+            products.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'card' + (isAdmin ? ' admin' : '');
+                card.innerHTML = `
+                    <button class="delete-btn">×</button>
+                    <img src="${p.img}" alt="${p.name}">
+                    <div class="card-content">
+                        <h2 class="product-name">${p.name}</h2>
+                        <p class="product-desc">${p.desc}</p>
+                        <div class="product-price">السعر: ${p.price}</div>
+                        <div class="action-row">
+                            <input type="number" min="1" value="1" class="quantity-input">
+                            <a class="buy-button" target="_blank">شراء عبر واتساب</a>
+                        </div>
+                    </div>`;
+
+                const qtyInput = card.querySelector('.quantity-input');
+                const buyLink = card.querySelector('.buy-button');
+                const msg = () => createMessage(p.name, p.price, qtyInput.value);
+                const url = `https://wa.me/${p.wa}?text=`;
+
+                qtyInput.addEventListener('input', () => buyLink.href = url + msg());
+                buyLink.href = url + msg();
+
+                card.querySelector('.delete-btn').addEventListener('click', () => {
+                    products.splice(idx, 1);
+                    saveAndRender();
+                });
+                container.appendChild(card);
+            });
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('products', JSON.stringify(products));
+            renderProducts(); updateUI();
+        }
+
+        function updateUI() {
+            loginBtn.textContent = isAdmin ? 'تسجيل خروج' : 'تسجيل دخول';
+            addBtn.style.display = isAdmin ? 'inline-block' : 'none';
+            form.style.display = 'none';
+            document.querySelectorAll('.card').forEach(c => c.classList.toggle('admin', isAdmin));
+        }
+
+        loginBtn.addEventListener('click', () => {
+            if (!isAdmin) {
+                const pass = prompt('يرجى إدخال كلمة مرور المدير:');
+                if (pass === ADMIN_PASS) { isAdmin = true; alert('تم تسجيل الدخول كأدمن!'); }
+                else alert('كلمة المرور غير صحيحة.');
+            } else { isAdmin = false; alert('تم تسجيل الخروج.'); }
+            updateUI(); renderProducts();
+        });
+
+        addBtn.addEventListener('click', () => form.style.display = form.style.display === 'block' ? 'none' : 'block');
+
+        saveBtn.addEventListener('click', () => {
+            const file = imgInput.files[0];
+            const name = document.getElementById('prod-name').value.trim();
+            const desc = document.getElementById('prod-desc').value.trim();
+            const price = document.getElementById('prod-price').value.trim();
+            const wa = document.getElementById('whatsapp-number').value.trim();
+            if (!file || !name || !desc || !price || !wa) { alert('يرجى تعبئة جميع الحقول.'); return; }
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                products.push({ img: e.target.result, name, desc, price, wa });
+                saveAndRender();
+                imgInput.value = ''; document.getElementById('prod-name').value = '';
+                document.getElementById('prod-desc').value = ''; document.getElementById('prod-price').value = '';
+                document.getElementById('whatsapp-number').value = '';
+                alert('تم إضافة المنتج بنجاح!');
+            };
+            reader.readAsDataURL(file);
+        });
+
+        updateUI(); renderProducts();
+    </script>
+</body>
+</html>
