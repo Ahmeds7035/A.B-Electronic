@@ -59,15 +59,15 @@
         
         .products {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
         }
         
         .product-card {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             transition: transform 0.3s;
         }
         
@@ -75,24 +75,61 @@
             transform: translateY(-5px);
         }
         
-        .product-image {
+        .product-gallery {
+            position: relative;
             width: 100%;
-            height: 200px;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .product-main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s;
+        }
+        
+        .product-thumbnails {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        
+        .thumbnail {
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            transition: all 0.3s;
             object-fit: cover;
         }
         
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #3498db;
+        }
+        
         .product-info {
-            padding: 15px;
+            padding: 20px;
         }
         
         .product-title {
-            font-size: 18px;
+            font-size: 20px;
             margin-bottom: 10px;
             color: #2c3e50;
         }
         
+        .product-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
         .product-price {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
             color: #e74c3c;
             margin-bottom: 15px;
@@ -101,37 +138,44 @@
         .quantity-controls {
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         
         .quantity-btn {
-            width: 30px;
-            height: 30px;
+            width: 35px;
+            height: 35px;
             background-color: #3498db;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 16px;
+            font-size: 18px;
             cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .quantity-btn:hover {
+            background-color: #2980b9;
         }
         
         .quantity-input {
-            width: 50px;
-            height: 30px;
+            width: 60px;
+            height: 35px;
             text-align: center;
             margin: 0 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
+            font-size: 16px;
         }
         
         .buy-btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #2ecc71;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 25px;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
             transition: background-color 0.3s;
         }
@@ -143,13 +187,13 @@
         .social-links {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 25px;
             margin-top: 30px;
         }
         
         .social-links a {
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             transition: transform 0.3s;
         }
         
@@ -161,17 +205,21 @@
             background-color: #2c3e50;
             color: white;
             text-align: center;
-            padding: 20px;
-            margin-top: 30px;
+            padding: 25px;
+            margin-top: 40px;
         }
         
         @media (max-width: 768px) {
             .products {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .product-gallery {
+                height: 220px;
             }
             
             .store-name {
-                font-size: 18px;
+                font-size: 20px;
             }
         }
         
@@ -187,6 +235,10 @@
             
             .logo {
                 margin-bottom: 10px;
+            }
+            
+            .product-gallery {
+                height: 200px;
             }
         }
     </style>
@@ -215,62 +267,95 @@
     </footer>
     
     <script>
-        // بيانات المنتجات - يمكنك تعديل هذه المصفوفة بسهولة لإضافة/تعديل المنتجات
+        // بيانات المنتجات
         const products = [
             {
                 id: 1,
-                name: "شاحن ليثيوم 12.6 فولت 3 امبير",
-                description: "شاحن ليثيوم 12.6 فولت بقوة 3 أمبير، مزود بحماية ضد القصر والدائرة المفتوحة، تصميم أنيق وسهل الاستخدام مع مؤشر ضوئي لحالة الشحن.",
+                name: "شاحن ليثيوم 12.6فولت 3 امبير",
+                description: "شاحن ليثيوم احترافي بجودة عالية، مدخل 220 فولت، خرج 12.6 فولت 3 أمبير، مناسب لجميع أنواع البطاريات الليثيوم، مع حماية ضد الشحن الزائد والارتفاع في درجة الحرارة.",
                 price: "250 ج.م",
-                image: "12.6.png"  // تأكد من وجود الصورة في مجلد images
+                images: [
+                    "12.6.png",
+                    "12.6-1.png",
+                    "12.6-2.png"
+                ],
+                mainImage: "12.6.png"
             },
             {
                 id: 2,
-                name: "شاحن ليثيوم 16.8 فولت 3 امبير",
-                 description: "شاحن ليثيوم 16.8 فولت بقوة 3 أمبير، مزود بحماية ضد القصر والدائرة المفتوحة، تصميم أنيق وسهل الاستخدام مع مؤشر ضوئي لحالة الشحن.",
+                name: "شاحن ليثيوم 16.8",
+                description: "شاحن ليثيوم 16.8 فولت بقوة 4 أمبير، مزود بحماية ضد القصر والدائرة المفتوحة، تصميم أنيق وسهل الاستخدام مع مؤشر ضوئي لحالة الشحن.",
                 price: "280 ج.م",
-                image: "16.8.png"
+                images: [
+                    "16.8.png",
+                    "16.8-1.png",
+                    "16.8-2.png"
+                ],
+                mainImage: "16.8.png"
             },
             {
                 id: 3,
-                name: "شاحن ليثيوم 21 فولت 3 امبير",
-                 description: "شاحن ليثيوم 21 فولت بقوة 3 أمبير، مزود بحماية ضد القصر والدائرة المفتوحة، تصميم أنيق وسهل الاستخدام مع مؤشر ضوئي لحالة الشحن.",
+                name: "شاحن ليثيوم 21",
+                description: "شاحن ليثيوم 21 فولت 5 أمبير، سريع الشحن مع مؤشر ضوئي لمعرفة حالة الشحن، مناسب للاستخدام المنزلي والمهني، مع كابل طويل 1.8 متر.",
                 price: "280 ج.م",
-                image: "21.png"
+                images: [
+                    "21.png",
+                    "21-1.png",
+                    "21-2.png"
+                ],
+                mainImage: "21.png"
             },
             {
                 id: 4,
                 name: "باور بانك رواتر بكشاف 4 امبير",
+                description: "باور بانك بقوة 20000 مللي أمبير مع كشاف LED، يدعم شحن الرواتر والهواتف والأجهزة الإلكترونية الأخرى، مع منافذ USB متعددة وشحن سريع.",
                 price: "700 ج.م",
-                image: "pB12.png"
+                images: [
+                    "pB12.png",
+                    "pB12-1.png",
+                    "pB12-2.png"
+                ],
+                mainImage: "pB12.png"
             },
-            // يمكنك إضافة منتجات جديدة هنا بنفس الطريقة:
-           
             {
                 id: 5,
                 name: "باور بانك سخان 4 امبير",
+                description: "باور بانك متعدد الوظائف مع سخان للسيارة، سعة 15000 مللي أمبير، شحن سريع وتصميم مضاد للصدمات، مع حماية ضد الشحن الزائد.",
                 price: "350 ج.م",
-                image: "PB3v.png"
+                images: [
+                    "PB3v.png",
+                    "PB3v-1.png",
+                    "PB3v-2.png"
+                ],
+                mainImage: "PB3v.png"
             },
             {
                 id: 6,
                 name: "وصلة رواتر على باور بانك موبايل",
+                description: "وصلة تمكنك من تشغيل الرواتر على باور بانك الموبايل، توصيل USB إلى DC، طول السلك 1.5 متر، متوافق مع معظم أنواع الراوترات.",
                 price: "80 ج.م",
-                image: "Router.png"
+                images: [
+                    "Router.png",
+                    "Router-1.png",
+                    "Router-2.png"
+                ],
+                mainImage: "Router.png"
             },
             {
                 id: 7,
                 name: "DC-LOAD-10AMP-100V",
+                description: "جهاز تحميل DC بقدرة 10 أمبير و 100 فولت، لاختبار البطاريات ومصادر الطاقة، مع شاشة عرض رقمية دقيقة وحماية ضد الحمل الزائد.",
                 price: "450 ج.م",
-                image: "DC.png"
-            },
- 
-     
-                    
-           
+                images: [
+                    "DC.png",
+                    "DC-1.png",
+                    "DC-2.png"
+                ],
+                mainImage: "DC.png"
+            }
         ];
         
-       // عرض المنتجات
+        // عرض المنتجات
         function displayProducts() {
             const productsContainer = document.getElementById('products-container');
             productsContainer.innerHTML = '';
