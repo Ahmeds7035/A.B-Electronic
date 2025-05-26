@@ -1,304 +1,106 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A.B Electronic Shop</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      direction: rtl;
-      background: #f5f5f5;
-      color: #333;
-    }
-    .top-bar {
-      background: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .top-bar img { height: 50px; }
-    .top-bar .buttons { display: flex; gap: 10px; }
-    .top-bar button {
-      padding: 8px 16px;
-      background: #007bff;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: .95em;
-    }
-    h1 {
-      text-align: center;
-      margin: 20px 0;
-      font-size: 2em;
-      font-weight: bold;
-    }
-    #add-product-form {
-      display: none;
-      max-width: 400px;
-      margin: 0 auto 20px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    #add-product-form input,
-    #add-product-form textarea,
-    #add-product-form button {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: .95em;
-      box-sizing: border-box;
-    }
-    #add-product-form button {
-      background: #28a745;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
-      gap: 20px;
-      max-width: 1200px;
-      margin: auto;
-      padding: 0 15px 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-    }
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    .card-content {
-      padding: 15px;
-      flex: 1;
-    }
-    .product-name { font-weight: bold; margin-bottom: 5px; }
-    .product-desc { font-size: .9em; color: #555; margin-bottom: 10px; }
-    .product-price { font-weight: bold; margin-bottom: 10px; }
-    .action-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .quantity-input {
-      width: 50px;
-      padding: 4px;
-      text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .buy-button {
-      flex: 1;
-      text-align: center;
-      padding: 8px;
-      background: #25d366;
-      color: #fff;
-      border-radius: 4px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: .9em;
-    }
-    .delete-btn {
-      display: none;
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: rgba(255,0,0,0.8);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-    }
-    .card.admin .delete-btn {
-      display: block;
-    }
-    footer {
-      background: #f1f1f1;
-      text-align: center;
-      padding: 15px;
-      font-size: .9em;
-    }
-  </style>
-
-  <!-- Firebase SDK setup (module) -->
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-    import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.8.1/firebase-analytics.js";
-    import {
-      getFirestore, collection, addDoc, getDocs,
-      deleteDoc, doc, query, orderBy, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
-    import {
-      getStorage, ref, uploadBytes, getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-storage.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey:    "AIzaSyAAEiYmVQ-tq34uHI0AFPOOcw_Ow4v_j30",
-      authDomain:"abelectronic-e8ee9.firebaseapp.com",
-      projectId: "abelectronic-e8ee9",
-      storageBucket: "abelectronic-e8ee9.appspot.com",
-      messagingSenderId: "740876799433",
-      appId:      "1:740876799433:web:4c582934bf9f8fe4792c18",
-      measurementId:"G-FY5XTH5376"
-    };
-
-    // Initialize Firebase
-    const app      = initializeApp(firebaseConfig);
-    const analytics= getAnalytics(app);
-    const db       = getFirestore(app);
-    const storage  = getStorage(app);
-
-    // Admin control
-    const ADMIN_PASS = atob("SGVsbG9AV29ybGQ5MA==");
-    let isAdmin = false;
-
-    // DOM elements
-    const loginBtn = document.getElementById('login-btn');
-    const addBtn   = document.getElementById('add-product-btn');
-    const formDiv  = document.getElementById('add-product-form');
-    const saveBtn  = document.getElementById('save-product');
-    const imgInput = document.getElementById('img-file');
-    const container= document.getElementById('products-container');
-
-    // Admin login/logout
-    loginBtn.addEventListener('click', () => {
-      if (!isAdmin) {
-        const pass = prompt('أدخل كلمة مرور الأدمن:');
-        if (pass === ADMIN_PASS) {
-          isAdmin = true;
-          alert('تم تسجيل الدخول كأدمن!');
-        } else {
-          alert('كلمة المرور غير صحيحة.');
-        }
-      } else {
-        isAdmin = false;
-        alert('تم تسجيل الخروج.');
-      }
-      updateUI();
-    });
-
-    // Update UI based on admin state
-    function updateUI() {
-      loginBtn.textContent = isAdmin ? 'تسجيل خروج' : 'تسجيل دخول';
-      addBtn.style.display  = isAdmin ? 'inline-block' : 'none';
-      formDiv.style.display = 'none';
-      document.querySelectorAll('.card')
-        .forEach(c => c.classList.toggle('admin', isAdmin));
-    }
-
-    // Toggle add form
-    addBtn.addEventListener('click', () => {
-      formDiv.style.display = formDiv.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Save product
-    saveBtn.addEventListener('click', async () => {
-      try {
-        const name  = document.getElementById('prod-name').value.trim();
-        const desc  = document.getElementById('prod-desc').value.trim();
-        const price = document.getElementById('prod-price').value.trim();
-        const wa    = document.getElementById('whatsapp-number').value.trim();
-        const file  = imgInput.files[0];
-        if (!name || !desc || !price || !wa || !file) {
-          return alert('يرجى تعبئة جميع الحقول.');
-        }
-
-        // Upload image
-        const imgRef = ref(storage, `products/${Date.now()}_${file.name}`);
-        const snap   = await uploadBytes(imgRef, file);
-        const imgURL = await getDownloadURL(snap.ref);
-
-        // Add document
-        await addDoc(collection(db, 'products'), {
-          name, desc, price, wa, img: imgURL,
-          createdAt: serverTimestamp()
-        });
-
-        alert('تم إضافة المنتج بنجاح!');
-
-        // Clear form
-        document.getElementById('prod-name').value = '';
-        document.getElementById('prod-desc').value = '';
-        document.getElementById('prod-price').value = '';
-        document.getElementById('whatsapp-number').value = '';
-        imgInput.value = '';
-
-        loadProducts();
-      } catch (e) {
-        console.error(e);
-        alert('حدث خطأ أثناء حفظ المنتج، تحقق من Console.');
-      }
-    });
-
-    // Load and render products
-    async function loadProducts() {
-      const q        = query(collection(db, 'products'), orderBy('createdAt','desc'));
-      const snapshot = await getDocs(q);
-      container.innerHTML = '';
-      snapshot.forEach(docSnap => {
-        const p = { id: docSnap.id, ...docSnap.data() };
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <button class="delete-btn">×</button>
-          <img src="${p.img}" alt="${p.name}">
-          <div class="card-content">
-            <h2 class="product-name">${p.name}</h2>
-            <p class="product-desc">${p.desc}</p>
-            <div class="product-price">${p.price}</div>
-            <div class="action-row">
-              <input type="number" value="1" min="1" class="quantity-input">
-              <a class="buy-button" target="_blank">شراء عبر واتساب</a>
-            </div>
-          </div>`;
-        // WhatsApp link
-        const qtyInput = card.querySelector('.quantity-input');
-        const buyLink  = card.querySelector('.buy-button');
-        function updateLink() {
-          const msg = encodeURIComponent(
-            `السلام عليكم،\nأرغب في شراء: ${p.name}\nالسعر: ${p.price}\nالكمية: ${qtyInput.value}`
-          );
-          buyLink.href = `https://wa.me/${p.wa}?text=${msg}`;
-        }
-        qtyInput.addEventListener('input', updateLink);
-        updateLink();
-        // Delete button (admin only)
-        card.querySelector('.delete-btn').addEventListener('click', async () => {
-          await deleteDoc(doc(db,'products',p.id));
-          loadProducts();
-        });
-        container.appendChild(card);
-      });
-      updateUI();
-    }
-
-    // Initial load
-    loadProducts();
-  </script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- المحتوى أعلاه -->
+  <div class="top-bar">
+    <img src="logo.jpeg" alt="شعار المتجر">
+    <div class="buttons">
+      <button id="login-btn">تسجيل دخول</button>
+      <button id="add-product-btn" style="display:none;">إضافة منتج</button>
+    </div>
+  </div>
+  <h1>A.B Electronic Shop</h1>
+  <div id="add-product-form" style="display:none;">
+    <form id="prodForm" enctype="multipart/form-data">
+      <input type="text" name="name" id="prod-name" placeholder="اسم المنتج" required>
+      <textarea name="desc" id="prod-desc" placeholder="وصف المنتج" required></textarea>
+      <input type="text" name="price" id="prod-price" placeholder="السعر" required>
+      <input type="text" name="wa" id="whatsapp-number" placeholder="رقم واتساب بدون +" required>
+      <input type="file" name="image" id="img-file" accept="image/*" required>
+      <button type="submit">حفظ المنتج</button>
+    </form>
+    <div id="msg"></div>
+  </div>
+  <div class="container" id="products-container"></div>
+  <footer>&copy; 2025 جميع الحقوق محفوظة لـ A.B Electronic Shop</footer>
+  <script src="main.js"></script>
 </body>
 </html>
+
+/* main.js */
+(async function() {
+  const API_BASE = 'http://YOUR_SERVER_IP:3000'; // عدّل IP وPort
+  const loginBtn = document.getElementById('login-btn');
+  const addBtn = document.getElementById('add-product-btn');
+  const formDiv = document.getElementById('add-product-form');
+  const prodForm = document.getElementById('prodForm');
+  const msgDiv = document.getElementById('msg');
+  const container = document.getElementById('products-container');
+
+  const ADMIN_PASS = atob("SGVsbG9AV29ybGQ5MA==");
+  let isAdmin = false;
+
+  // Admin login/logout
+  loginBtn.addEventListener('click', () => {
+    if (!isAdmin) {
+      const p = prompt('كلمة مرور الأدمن:');
+      if (p === ADMIN_PASS) {
+        isAdmin = true;
+        addBtn.style.display = 'inline-block';
+        alert('تم تسجيل الدخول كأدمن');
+      } else alert('كلمة المرور غير صحيحة');
+    } else {
+      isAdmin = false;
+      addBtn.style.display = 'none';
+      formDiv.style.display = 'none';
+      alert('تم تسجيل الخروج');
+    }
+  });
+
+  // Toggle form
+  addBtn.addEventListener('click', ()=>{
+    formDiv.style.display = formDiv.style.display === 'block' ? 'none':'block';
+  });
+
+  // Load products
+  async function loadProducts() {
+    try {
+      const res = await fetch(`${API_BASE}/api/products`);
+      const products = await res.json();
+      container.innerHTML = '';
+      for (const p of products) {
+        const card = document.createElement('div'); card.className='card';
+        card.innerHTML = `
+          <img src="${p.img}" alt="${p.name}">
+          <h3>${p.name}</h3>
+          <p>${p.desc}</p>
+          <strong>السعر: ${p.price}</strong><br>
+          <a href="https://wa.me/${p.wa}?text=${encodeURIComponent('السلام عليكم، أرغب في شراء '+p.name)}" target="_blank">شراء عبر واتساب</a>
+        `;
+        container.appendChild(card);
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  // Submit form
+  prodForm.addEventListener('submit', async e=>{
+    e.preventDefault();
+    const data = new FormData(prodForm);
+    msgDiv.textContent = 'جاري الحفظ...';
+    const res = await fetch(`${API_BASE}/api/products`, { method:'POST', body: data });
+    const result = await res.json();
+    if (res.ok) {
+      msgDiv.textContent = 'تم إضافة المنتج!';
+      prodForm.reset();
+      loadProducts();
+    } else msgDiv.textContent = result.error || 'فشل الحفظ.';
+  });
+
+  loadProducts();
+})();
