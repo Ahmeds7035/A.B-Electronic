@@ -270,7 +270,7 @@
            
         ];
         
-        // عرض المنتجات
+       // عرض المنتجات
         function displayProducts() {
             const productsContainer = document.getElementById('products-container');
             productsContainer.innerHTML = '';
@@ -343,16 +343,10 @@
             const quantity = productCard.querySelector('.quantity-input').value;
             const price = productCard.querySelector('.product-price').textContent;
             
-            // استبدل برقم هاتفك الحقيقي
             const phoneNumber = "201550461829";
-            
-            // إنشاء رسالة الواتساب
             const message = `مرحباً، أريد شراء المنتج التالي:\n\nالمنتج: ${productName}\nالكمية: ${quantity}\nالسعر: ${price}\n\nشكراً!`;
-            
-            // تشفير الرسالة للرابط
             const encodedMessage = encodeURIComponent(message);
             
-            // فتح رابط الواتساب
             window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
         }
         
