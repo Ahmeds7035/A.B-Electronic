@@ -273,14 +273,28 @@
         // عرض المنتجات
         function displayProducts() {
             const productsContainer = document.getElementById('products-container');
-            productsContainer.innerHTML = ''; // مسح المحتوى الحالي
+            productsContainer.innerHTML = '';
             
             products.forEach(product => {
+                let thumbnailsHTML = '';
+                product.images.forEach((image, index) => {
+                    thumbnailsHTML += `
+                        <img src="${image}" class="thumbnail ${index === 0 ? 'active' : ''}" 
+                             onclick="changeMainImage(this, '${product.id}')" alt="صورة ${index + 1}">
+                    `;
+                });
+                
                 const productHTML = `
                     <div class="product-card">
-                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        <div class="product-gallery">
+                            <img src="${product.mainImage}" id="main-image-${product.id}" class="product-main-image" alt="${product.name}">
+                            <div class="product-thumbnails">
+                                ${thumbnailsHTML}
+                            </div>
+                        </div>
                         <div class="product-info">
                             <h3 class="product-title">${product.name}</h3>
+                            <p class="product-description">${product.description}</p>
                             <div class="product-price">${product.price}</div>
                             <div class="quantity-controls">
                                 <button class="quantity-btn minus" onclick="decrement(this)">-</button>
@@ -294,6 +308,19 @@
                 
                 productsContainer.innerHTML += productHTML;
             });
+        }
+        
+        // تغيير الصورة الرئيسية
+        function changeMainImage(thumbnail, productId) {
+            const mainImage = document.getElementById(`main-image-${productId}`);
+            mainImage.src = thumbnail.src;
+            
+            const thumbnails = thumbnail.parentElement.querySelectorAll('.thumbnail');
+            thumbnails.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            thumbnail.classList.add('active');
         }
         
         // زيادة الكمية
