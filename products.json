@@ -1,0 +1,16 @@
+[
+  {
+    "name": "منتج 1",
+    "desc": "وصف المنتج الأول",
+    "price": "100 ج.م",
+    "wa": "201234567890",
+    "img": "https://via.placeholder.com/300x200.png?text=Product+1"
+  },
+  {
+    "name": "منتج 2",
+    "desc": "وصف المنتج الثاني",
+    "price": "150 ج.م",
+    "wa": "201234567891",
+    "img": "https://via.placeholder.com/300x200.png?text=Product+2"
+  }
+]
