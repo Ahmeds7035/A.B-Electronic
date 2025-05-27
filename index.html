@@ -69,16 +69,83 @@
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            position: relative;
         }
         
         .product-card:hover {
             transform: translateY(-5px);
         }
         
-        .product-image {
+        .product-image-container {
             width: 100%;
             height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-slider {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-slide {
+            min-width: 100%;
+            height: 100%;
+        }
+        
+        .product-slide img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+        }
+        
+        .slider-nav {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .slider-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: rgba(255,255,255,0.5);
+            cursor: pointer;
+        }
+        
+        .slider-dot.active {
+            background-color: white;
+        }
+        
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0,0,0,0.3);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1;
+        }
+        
+        .slider-arrow.left {
+            left: 10px;
+        }
+        
+        .slider-arrow.right {
+            right: 10px;
         }
         
         .product-info {
@@ -96,6 +163,16 @@
             font-weight: bold;
             color: #e74c3c;
             margin-bottom: 15px;
+        }
+        
+        .out-of-stock {
+            background-color: #f39c12;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: inline-block;
         }
         
         .quantity-controls {
@@ -138,6 +215,33 @@
         
         .buy-btn:hover {
             background-color: #27ae60;
+        }
+        
+        .buy-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .description-toggle {
+            color: #3498db;
+            cursor: pointer;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        .product-description {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        .product-description.show {
+            max-height: 200px;
+            margin-bottom: 10px;
         }
         
         .social-links {
@@ -221,50 +325,58 @@
                 id: 1,
                 name: "شاحن ليثيوم 12.6 فولت 3 امبير",
                 price: "250 ج.م",
-                image: "12.6.png"  // تأكد من وجود الصورة في مجلد images
+                images: ["12.6.png", "12.6_2.png", "12.6_3.png"], // صور متعددة للمنتج
+                description: "شاحن ليثيوم عالي الجودة بجهد 12.6 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
+                stock: 5 // الكمية المتاحة
             },
             {
                 id: 2,
                 name: "شاحن ليثيوم 16.8 فولت 3 امبير",
                 price: "280 ج.م",
-                image: "16.8.png"
+                images: ["16.8.png", "16.8_2.png"],
+                description: "شاحن ليثيوم عالي الجودة بجهد 16.8 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
+                stock: 0 // نفذت الكمية
             },
             {
                 id: 3,
                 name: "شاحن ليثيوم 21 فولت 3 امبير",
                 price: "280 ج.م",
-                image: "21.png"
+                images: ["21.png"],
+                description: "شاحن ليثيوم عالي الجودة بجهد 21 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
+                stock: 3
             },
             {
                 id: 4,
                 name: "باور بانك رواتر بكشاف 4 امبير",
                 price: "700 ج.م",
-                image: "pB12.png"
+                images: ["pB12.png", "pB12_2.png"],
+                description: "باور بانك طورائ لتشغيل الراوتر عند انقطاع التيار الكهربى بشكل تلقائى لعدد ساعات طويلة ومزود بكشاف  ولبمات بيان شحن والشحن التلقائى عند عودة التيار",
+                stock: 2
             },
-            // يمكنك إضافة منتجات جديدة هنا بنفس الطريقة:
-           
             {
                 id: 5,
                 name: "باور بانك سخان 4 امبير",
                 price: "350 ج.م",
-                image: "PB3v.png"
+                images: ["PB3v.png"],
+                description: "باور بانك مع سخان مدمج، سعة 4 أمبير، لتشغيل السخان  دون الحاجة الى ادابتور 3 فولت الشحنة الواحدة تكفى شهور طويلة وبة منفذ تايب سى للشحن من اى شاحن موبايل .",
+                stock: 7
             },
             {
                 id: 6,
                 name: "وصلة رواتر على باور بانك موبايل",
                 price: "80 ج.م",
-                image: "Router.png"
+                images: ["Router.png"],
+                description: "وصلة تمكنك من تشغيل الراوتر على باور بانك الموبايل، سهلة الاستخدام وتوفر حل عملي لانقطاع الكهرباء.",
+                stock: 10
             },
             {
                 id: 7,
                 name: "DC-LOAD-10AMP-100V",
                 price: "450 ج.م",
-                image: "DC.png"
-            },
- 
-     
-                    
-           
+                images: ["DC.png", "DC_2.png"],
+                description: "جهاز DC LOAD بقدرة 10 أمبير وجهد حتى 100 فولت، مثالي لاختبار مصادر الطاقة والبطاريات،   .",
+                stock: 0
+            }
         ];
         
         // عرض المنتجات
@@ -273,18 +385,52 @@
             productsContainer.innerHTML = ''; // مسح المحتوى الحالي
             
             products.forEach(product => {
+                const isOutOfStock = product.stock === 0;
+                
                 const productHTML = `
                     <div class="product-card">
-                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        <div class="product-image-container">
+                            <div class="product-slider" id="slider-${product.id}">
+                                ${product.images.map(img => `
+                                    <div class="product-slide">
+                                        <img src="${img}" alt="${product.name}">
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            ${product.images.length > 1 ? `
+                                <button class="slider-arrow left" onclick="moveSlide(${product.id}, -1)">&#10094;</button>
+                                <button class="slider-arrow right" onclick="moveSlide(${product.id}, 1)">&#10095;</button>
+                                <div class="slider-nav" id="slider-nav-${product.id}">
+                                    ${product.images.map((_, index) => `
+                                        <div class="slider-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${product.id}, ${index})"></div>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                        
                         <div class="product-info">
                             <h3 class="product-title">${product.name}</h3>
                             <div class="product-price">${product.price}</div>
-                            <div class="quantity-controls">
-                                <button class="quantity-btn minus" onclick="decrement(this)">-</button>
-                                <input type="number" class="quantity-input" value="1" min="1">
-                                <button class="quantity-btn plus" onclick="increment(this)">+</button>
+                            
+                            ${isOutOfStock ? '<div class="out-of-stock">نفذت الكمية</div>' : ''}
+                            
+                            <div class="description-toggle" onclick="toggleDescription(this)">
+                                <span>اضغط لعرض الوصف</span> <i class="fas fa-chevron-down"></i>
                             </div>
-                            <button class="buy-btn" onclick="buyProduct('${product.name}', this)">شراء</button>
+                            
+                            <div class="product-description">
+                                ${product.description}
+                            </div>
+                            
+                            <div class="quantity-controls">
+                                <button class="quantity-btn minus" onclick="decrement(this)" ${isOutOfStock ? 'disabled' : ''}>-</button>
+                                <input type="number" class="quantity-input" value="1" min="1" max="${product.stock}" ${isOutOfStock ? 'disabled' : ''}>
+                                <button class="quantity-btn plus" onclick="increment(this)" ${isOutOfStock ? 'disabled' : ''}>+</button>
+                            </div>
+                            <button class="buy-btn" onclick="buyProduct('${product.name}', this)" ${isOutOfStock ? 'disabled' : ''}>
+                                ${isOutOfStock ? 'نفذت الكمية' : 'شراء'}
+                            </button>
                         </div>
                     </div>
                 `;
@@ -293,10 +439,65 @@
             });
         }
         
+        // تحريك السلايدر
+        function moveSlide(productId, direction) {
+            const slider = document.getElementById(`slider-${productId}`);
+            const slides = slider.querySelectorAll('.product-slide');
+            const dots = document.getElementById(`slider-nav-${productId}`).querySelectorAll('.slider-dot');
+            
+            const currentSlide = parseInt(slider.dataset.current || 0);
+            let newSlide = currentSlide + direction;
+            
+            if (newSlide < 0) newSlide = slides.length - 1;
+            if (newSlide >= slides.length) newSlide = 0;
+            
+            slider.style.transform = `translateX(-${newSlide * 100}%)`;
+            slider.dataset.current = newSlide;
+            
+            // تحديث النقاط النشطة
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === newSlide);
+            });
+        }
+        
+        // الانتقال إلى شريحة محددة
+        function goToSlide(productId, slideIndex) {
+            const slider = document.getElementById(`slider-${productId}`);
+            const dots = document.getElementById(`slider-nav-${productId}`).querySelectorAll('.slider-dot');
+            
+            slider.style.transform = `translateX(-${slideIndex * 100}%)`;
+            slider.dataset.current = slideIndex;
+            
+            // تحديث النقاط النشطة
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === slideIndex);
+            });
+        }
+        
+        // تبديل عرض الوصف
+        function toggleDescription(button) {
+            const description = button.nextElementSibling;
+            const icon = button.querySelector('i');
+            
+            description.classList.toggle('show');
+            
+            if (description.classList.contains('show')) {
+                button.querySelector('span').textContent = 'اضغط لإخفاء الوصف';
+                icon.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                button.querySelector('span').textContent = 'اضغط لعرض الوصف';
+                icon.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+        
         // زيادة الكمية
         function increment(button) {
             const input = button.parentElement.querySelector('.quantity-input');
-            input.value = parseInt(input.value) + 1;
+            const max = parseInt(input.max);
+            let value = parseInt(input.value) + 1;
+            
+            if (value > max) value = max;
+            input.value = value;
         }
         
         // تقليل الكمية
