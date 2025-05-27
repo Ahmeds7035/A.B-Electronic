@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.B Electronic Shop - متجر إلكتروني</title>
+    <link rel="icon" href="logo.jpeg" type="image/jpeg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -26,6 +27,34 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .calculator-btn {
+            background-color: #FFA500;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        
+        .calculator-btn:hover {
+            background-color: #FF8C00;
         }
         
         .logo {
@@ -36,6 +65,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            margin: 0 auto;
         }
         
         .logo img {
@@ -49,6 +79,126 @@
             text-align: center;
             font-size: 30px;
             font-weight: bold;
+        }
+        
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .cart-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            background-color: white;
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            z-index: 100;
+            display: none;
+            color: #333;
+        }
+        
+        .cart-dropdown.show {
+            display: block;
+        }
+        
+        .cart-header {
+            padding: 10px;
+            background-color: #2c3e50;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-items {
+            padding: 10px;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-info {
+            flex-grow: 1;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+        }
+        
+        .cart-item-price {
+            color: #e74c3c;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        
+        .cart-item-quantity input {
+            width: 40px;
+            text-align: center;
+            margin: 0 5px;
+        }
+        
+        .remove-item {
+            color: #e74c3c;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .cart-footer {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #27ae60;
         }
         
         .container {
@@ -201,23 +351,43 @@
             border-radius: 4px;
         }
         
-        .buy-btn {
-            width: 100%;
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .buy-btn, .add-to-cart-btn {
+            flex: 1;
             padding: 10px;
-            background-color: #2ecc71;
             color: white;
             border: none;
             border-radius: 4px;
-            font-size: 28px;
+            font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .buy-btn {
+            background-color: #2ecc71;
         }
         
         .buy-btn:hover {
             background-color: #27ae60;
         }
         
-        .buy-btn:disabled {
+        .add-to-cart-btn {
+            background-color: #3498db;
+        }
+        
+        .add-to-cart-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .buy-btn:disabled, .add-to-cart-btn:disabled {
             background-color: #95a5a6;
             cursor: not-allowed;
         }
@@ -277,6 +447,10 @@
             .store-name {
                 font-size: 18px;
             }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
         }
         
         @media (max-width: 480px) {
@@ -287,16 +461,57 @@
             header {
                 flex-direction: column;
                 text-align: center;
+                padding-bottom: 15px;
             }
             
             .logo {
                 margin-bottom: 10px;
+            }
+            
+            .header-left {
+                position: static;
+                transform: none;
+                margin-top: 10px;
+                justify-content: center;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .cart-dropdown {
+                right: 0;
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
     <header>
+        <div class="header-left">
+            <a href="https://abelectronics.ourservice.cloud/" class="calculator-btn">A.B calculator</a>
+            <div class="cart-icon" id="cart-icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cart-count">0</span>
+                <div class="cart-dropdown" id="cart-dropdown">
+                    <div class="cart-header">
+                        <h3>سلة التسوق</h3>
+                        <i class="fas fa-times" id="close-cart"></i>
+                    </div>
+                    <div class="cart-items" id="cart-items">
+                        <!-- سيتم إضافة عناصر السلة هنا -->
+                    </div>
+                    <div class="cart-footer">
+                        <div class="cart-total">
+                            <span>الإجمالي:</span>
+                            <span id="cart-total">0 ج.م</span>
+                        </div>
+                        <button class="checkout-btn" id="checkout-btn">
+                            <i class="fab fa-whatsapp"></i> إتمام الشراء عبر واتساب
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div class="logo">
             <img src="logo.jpeg" alt="شعار المتجر">
         </div>
@@ -319,28 +534,28 @@
     </footer>
     
     <script>
-        // بيانات المنتجات - يمكنك تعديل هذه المصفوفة بسهولة لإضافة/تعديل المنتجات
+        // بيانات المنتجات
         const products = [
             {
                 id: 1,
                 name: "شاحن ليثيوم 12.6 فولت 3 امبير",
-                price: "250 ج.م",
-                images: ["12.6.png", "12.6_2.png", "12.6_3.png"], // صور متعددة للمنتج
+                price: 250,
+                images: ["12.6.png", "12.6_2.png", "12.6_3.png"],
                 description: "شاحن ليثيوم عالي الجودة بجهد 12.6 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
-                stock: 5 // الكمية المتاحة
+                stock: 5
             },
             {
                 id: 2,
                 name: "شاحن ليثيوم 16.8 فولت 3 امبير",
-                price: "280 ج.م",
+                price: 280,
                 images: ["16.8.png", "16.8_2.png"],
                 description: "شاحن ليثيوم عالي الجودة بجهد 16.8 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
-                stock: 5// نفذت الكمية
+                stock: 5
             },
             {
                 id: 3,
                 name: "شاحن ليثيوم 21 فولت 3 امبير",
-                price: "280 ج.م",
+                price: 280,
                 images: ["21.png"],
                 description: "شاحن ليثيوم عالي الجودة بجهد 21 فولت وتيار 3 أمبير، مناسب لجميع أنواع بطاريات الليثيوم، مزود بحماية ضد الشورت سيركت و  بمؤشر ضوئي لمعرفة حالة الشحن.",
                 stock: 5
@@ -348,7 +563,7 @@
             {
                 id: 4,
                 name: "باور بانك رواتر بكشاف 4 امبير",
-                price: "700 ج.م",
+                price: 700,
                 images: ["pB12.png", "pB12_2.png"],
                 description: "باور بانك طورائ لتشغيل الراوتر عند انقطاع التيار الكهربى بشكل تلقائى لعدد ساعات طويلة ومزود بكشاف  ولبمات بيان شحن والشحن التلقائى عند عودة التيار",
                 stock: 2
@@ -356,7 +571,7 @@
             {
                 id: 5,
                 name: "باور بانك سخان 4 امبير",
-                price: "350 ج.م",
+                price: 350,
                 images: ["PB3v.png"],
                 description: "باور بانك مع سخان مدمج، سعة 4 أمبير، لتشغيل السخان  دون الحاجة الى ادابتور 3 فولت الشحنة الواحدة تكفى شهور طويلة وبة منفذ تايب سى للشحن من اى شاحن موبايل .",
                 stock: 7
@@ -364,7 +579,7 @@
             {
                 id: 6,
                 name: "وصلة رواتر على باور بانك موبايل",
-                price: "80 ج.م",
+                price: 80,
                 images: ["Router.png"],
                 description: "وصلة تمكنك من تشغيل الراوتر على باور بانك الموبايل، سهلة الاستخدام وتوفر حل عملي لانقطاع الكهرباء.",
                 stock: 10
@@ -372,17 +587,20 @@
             {
                 id: 7,
                 name: "DC-LOAD-10AMP-100V",
-                price: "450 ج.م",
+                price: 450,
                 images: ["DC.png", "DC_2.png"],
                 description: "جهاز DC LOAD بقدرة 10 أمبير وجهد حتى 100 فولت، مثالي لاختبار مصادر الطاقة والبطاريات،   .",
                 stock: 0
             }
         ];
         
+        // سلة التسوق
+        let cart = [];
+        
         // عرض المنتجات
         function displayProducts() {
             const productsContainer = document.getElementById('products-container');
-            productsContainer.innerHTML = ''; // مسح المحتوى الحالي
+            productsContainer.innerHTML = '';
             
             products.forEach(product => {
                 const isOutOfStock = product.stock === 0;
@@ -411,7 +629,7 @@
                         
                         <div class="product-info">
                             <h3 class="product-title">${product.name}</h3>
-                            <div class="product-price">${product.price}</div>
+                            <div class="product-price">${product.price} ج.م</div>
                             
                             ${isOutOfStock ? '<div class="out-of-stock">نفذت الكمية</div>' : ''}
                             
@@ -428,15 +646,160 @@
                                 <input type="number" class="quantity-input" value="1" min="1" max="${product.stock}" ${isOutOfStock ? 'disabled' : ''}>
                                 <button class="quantity-btn plus" onclick="increment(this)" ${isOutOfStock ? 'disabled' : ''}>+</button>
                             </div>
-                            <button class="buy-btn" onclick="buyProduct('${product.name}', this)" ${isOutOfStock ? 'disabled' : ''}>
-                                ${isOutOfStock ? 'نفذت الكمية' : 'شراء'}
-                            </button>
+                            <div class="action-buttons">
+                                <button class="add-to-cart-btn" onclick="addToCart(${product.id}, this)" ${isOutOfStock ? 'disabled' : ''}>
+                                    <i class="fas fa-cart-plus"></i> أضف للسلة
+                                </button>
+                                <button class="buy-btn" onclick="buyProduct(${product.id}, this)" ${isOutOfStock ? 'disabled' : ''}>
+                                    <i class="fas fa-shopping-bag"></i> شراء
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `;
                 
                 productsContainer.innerHTML += productHTML;
             });
+        }
+        
+        // إضافة منتج إلى السلة
+        function addToCart(productId, button) {
+            const product = products.find(p => p.id === productId);
+            const productCard = button.closest('.product-card');
+            const quantityInput = productCard.querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput.value);
+            
+            // التحقق من الكمية المتاحة
+            if (quantity > product.stock) {
+                alert(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`);
+                return;
+            }
+            
+            // التحقق مما إذا كان المنتج موجودًا بالفعل في السلة
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity,
+                    image: product.images[0]
+                });
+            }
+            
+            updateCart();
+            showCart();
+            
+            // إظهار رسالة تأكيد
+            alert(`تمت إضافة ${quantity} من ${product.name} إلى سلة التسوق`);
+        }
+        
+        // تحديث عرض السلة
+        function updateCart() {
+            const cartCount = document.getElementById('cart-count');
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            // تحديث عدد العناصر في السلة
+            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+            cartCount.textContent = totalItems;
+            
+            // تحديث محتويات السلة
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<p style="text-align:center; padding:20px;">سلة التسوق فارغة</p>';
+                return;
+            }
+            
+            let totalPrice = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                totalPrice += itemTotal;
+                
+                const cartItemHTML = `
+                    <div class="cart-item">
+                        <img src="${item.image}" alt="${item.name}" width="50" height="50" style="object-fit:cover; border-radius:4px;">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price} ج.م × ${item.quantity}</div>
+                        </div>
+                        <div class="cart-item-quantity">
+                            <i class="fas fa-trash remove-item" onclick="removeFromCart(${item.id})"></i>
+                        </div>
+                    </div>
+                `;
+                
+                cartItems.innerHTML += cartItemHTML;
+            });
+            
+            // تحديث الإجمالي
+            cartTotal.textContent = `${totalPrice} ج.م`;
+        }
+        
+        // إزالة منتج من السلة
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+        
+        // إظهار/إخفاء السلة
+        function showCart() {
+            const cartDropdown = document.getElementById('cart-dropdown');
+            cartDropdown.classList.add('show');
+        }
+        
+        function hideCart() {
+            const cartDropdown = document.getElementById('cart-dropdown');
+            cartDropdown.classList.remove('show');
+        }
+        
+        // شراء المنتجات في السلة عبر واتساب
+        function checkout() {
+            if (cart.length === 0) {
+                alert('سلة التسوق فارغة');
+                return;
+            }
+            
+            const phoneNumber = "201550461829";
+            let message = "مرحباً، أريد شراء المنتجات التالية:\n\n";
+            
+            let totalPrice = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                totalPrice += itemTotal;
+                message += `- ${item.name} (${item.price} ج.م × ${item.quantity}) = ${itemTotal} ج.م\n`;
+            });
+            
+            message += `\nالإجمالي: ${totalPrice} ج.م\n\nشكراً!`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+        }
+        
+        // شراء منتج واحد مباشرة
+        function buyProduct(productId, button) {
+            const product = products.find(p => p.id === productId);
+            const productCard = button.closest('.product-card');
+            const quantityInput = productCard.querySelector('.quantity-input');
+            const quantity = parseInt(quantityInput.value);
+            
+            // التحقق من الكمية المتاحة
+            if (quantity > product.stock) {
+                alert(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`);
+                return;
+            }
+            
+            const phoneNumber = "201550461829";
+            const message = `مرحباً، أريد شراء المنتج التالي:\n\nالمنتج: ${product.name}\nالكمية: ${quantity}\nالسعر للواحدة: ${product.price} ج.م\nالإجمالي: ${product.price * quantity} ج.م\n\nشكراً!`;
+            const encodedMessage = encodeURIComponent(message);
+            
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
         }
         
         // تحريك السلايدر
@@ -454,7 +817,6 @@
             slider.style.transform = `translateX(-${newSlide * 100}%)`;
             slider.dataset.current = newSlide;
             
-            // تحديث النقاط النشطة
             dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === newSlide);
             });
@@ -468,7 +830,6 @@
             slider.style.transform = `translateX(-${slideIndex * 100}%)`;
             slider.dataset.current = slideIndex;
             
-            // تحديث النقاط النشطة
             dots.forEach((dot, index) => {
                 dot.classList.toggle('active', index === slideIndex);
             });
@@ -508,27 +869,35 @@
             }
         }
         
-        // شراء المنتج
-        function buyProduct(productName, button) {
-            const productCard = button.closest('.product-card');
-            const quantity = productCard.querySelector('.quantity-input').value;
-            const price = productCard.querySelector('.product-price').textContent;
+        // أحداث DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            displayProducts();
             
-            // استبدل برقم هاتفك الحقيقي
-            const phoneNumber = "201550461829";
+            // أحداث السلة
+            document.getElementById('cart-icon').addEventListener('click', (e) => {
+                e.stopPropagation();
+                const cartDropdown = document.getElementById('cart-dropdown');
+                if (cartDropdown.classList.contains('show')) {
+                    hideCart();
+                } else {
+                    showCart();
+                }
+            });
             
-            // إنشاء رسالة الواتساب
-            const message = `مرحباً، أريد شراء المنتج التالي:\n\nالمنتج: ${productName}\nالكمية: ${quantity}\nالسعر: ${price}\n\nشكراً!`;
+            document.getElementById('close-cart').addEventListener('click', (e) => {
+                e.stopPropagation();
+                hideCart();
+            });
             
-            // تشفير الرسالة للرابط
-            const encodedMessage = encodeURIComponent(message);
+            document.getElementById('checkout-btn').addEventListener('click', checkout);
             
-            // فتح رابط الواتساب
-            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-        }
-        
-        // عرض المنتجات عند تحميل الصفحة
-        window.onload = displayProducts;
+            // إغلاق السلة عند النقر خارجها
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#cart-dropdown') && !e.target.closest('#cart-icon')) {
+                    hideCart();
+                }
+            });
+        });
     </script>
 </body>
 </html>
