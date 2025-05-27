@@ -17,6 +17,9 @@
         body {
             background-color: #f5f5f5;
             color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         
         header {
@@ -28,16 +31,14 @@
             justify-content: space-between;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             position: relative;
+            flex-wrap: wrap;
         }
         
         .header-left {
             display: flex;
             align-items: center;
             gap: 15px;
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
+            order: 1;
         }
         
         .calculator-btn {
@@ -66,6 +67,7 @@
             justify-content: center;
             overflow: hidden;
             margin: 0 auto;
+            order: 2;
         }
         
         .logo img {
@@ -79,6 +81,9 @@
             text-align: center;
             font-size: 30px;
             font-weight: bold;
+            order: 3;
+            width: 100%;
+            margin-top: 10px;
         }
         
         .cart-icon {
@@ -103,27 +108,44 @@
             font-size: 12px;
         }
         
-        .cart-dropdown {
-            position: absolute;
-            top: 100%;
-            right: 20px;
-            background-color: white;
-            width: 300px;
-            max-height: 400px;
-            overflow-y: auto;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
-            z-index: 100;
+        /* تصميم جديد للسلة */
+        .cart-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
             display: none;
-            color: #333;
         }
         
-        .cart-dropdown.show {
+        .cart-overlay.show {
             display: block;
         }
         
+        .cart-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .cart-container.show {
+            transform: translateX(0);
+        }
+        
         .cart-header {
-            padding: 10px;
+            padding: 15px;
             background-color: #2c3e50;
             color: white;
             display: flex;
@@ -132,38 +154,68 @@
         }
         
         .cart-items {
-            padding: 10px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
         }
         
         .cart-item {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
             border-bottom: 1px solid #eee;
         }
         
-        .cart-item-info {
-            flex-grow: 1;
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-left: 10px;
+        }
+        
+        .cart-item-details {
+            flex: 1;
         }
         
         .cart-item-name {
             font-weight: bold;
+            margin-bottom: 5px;
         }
         
         .cart-item-price {
             color: #e74c3c;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-actions {
+            display: flex;
+            align-items: center;
         }
         
         .cart-item-quantity {
             display: flex;
             align-items: center;
+            margin-left: 10px;
         }
         
-        .cart-item-quantity input {
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .quantity-input {
             width: 40px;
+            height: 25px;
             text-align: center;
             margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         
         .remove-item {
@@ -173,7 +225,7 @@
         }
         
         .cart-footer {
-            padding: 10px;
+            padding: 15px;
             background-color: #f9f9f9;
             border-top: 1px solid #eee;
         }
@@ -182,12 +234,13 @@
             display: flex;
             justify-content: space-between;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 18px;
         }
         
         .checkout-btn {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #2ecc71;
             color: white;
             border: none;
@@ -195,16 +248,32 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
         
         .checkout-btn:hover {
             background-color: #27ae60;
         }
         
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+        
+        .close-cart {
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 20px auto;
             padding: 0 15px;
+            flex: 1;
         }
         
         .products {
@@ -219,7 +288,6 @@
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s;
-            position: relative;
         }
         
         .product-card:hover {
@@ -439,47 +507,87 @@
             margin-top: 30px;
         }
         
+        @media (max-width: 992px) {
+            .cart-container {
+                max-width: 350px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .products {
                 grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             }
             
             .store-name {
-                font-size: 18px;
+                font-size: 24px;
             }
             
             .action-buttons {
                 flex-direction: column;
             }
+            
+            .cart-container {
+                max-width: 100%;
+            }
         }
         
         @media (max-width: 480px) {
-            .products {
-                grid-template-columns: 1fr;
-            }
-            
             header {
-                flex-direction: column;
-                text-align: center;
-                padding-bottom: 15px;
-            }
-            
-            .logo {
-                margin-bottom: 10px;
+                flex-direction: row;
+                padding: 10px 15px;
             }
             
             .header-left {
                 position: static;
                 transform: none;
-                margin-top: 10px;
-                justify-content: center;
-                width: 100%;
-                gap: 10px;
+                order: 1;
             }
             
-            .cart-dropdown {
-                right: 0;
+            .logo {
+                order: 2;
+                width: 40px;
+                height: 40px;
+                margin: 0;
+            }
+            
+            .store-name {
+                order: 3;
+                font-size: 20px;
+                margin-top: 0;
+                width: auto;
+                flex-grow: 1;
+                text-align: center;
+                padding: 0 10px;
+            }
+            
+            .product-title {
+                font-size: 16px;
+            }
+            
+            .product-price {
+                font-size: 18px;
+            }
+            
+            .buy-btn, .add-to-cart-btn {
+                font-size: 14px;
+                padding: 8px;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+            }
+            
+            .cart-item-image {
                 width: 100%;
+                height: auto;
+                max-height: 150px;
+                margin-bottom: 10px;
+                margin-left: 0;
+            }
+            
+            .cart-item-actions {
+                margin-top: 10px;
+                justify-content: space-between;
             }
         }
     </style>
@@ -487,28 +595,10 @@
 <body>
     <header>
         <div class="header-left">
-            <a href="https://abelectronics.ourservice.cloud/" class="calculator-btn">A.B calculator</a>
+            <a href="https://example.com/calculator" class="calculator-btn">A.B calculator</a>
             <div class="cart-icon" id="cart-icon">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-count" id="cart-count">0</span>
-                <div class="cart-dropdown" id="cart-dropdown">
-                    <div class="cart-header">
-                        <h3>سلة التسوق</h3>
-                        <i class="fas fa-times" id="close-cart"></i>
-                    </div>
-                    <div class="cart-items" id="cart-items">
-                        <!-- سيتم إضافة عناصر السلة هنا -->
-                    </div>
-                    <div class="cart-footer">
-                        <div class="cart-total">
-                            <span>الإجمالي:</span>
-                            <span id="cart-total">0 ج.م</span>
-                        </div>
-                        <button class="checkout-btn" id="checkout-btn">
-                            <i class="fab fa-whatsapp"></i> إتمام الشراء عبر واتساب
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
         
@@ -517,6 +607,27 @@
         </div>
         <div class="store-name">A.B Electronic Shop</div>
     </header>
+    
+    <!-- سلة التسوق الجديدة -->
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-container" id="cart-container">
+        <div class="cart-header">
+            <h3>سلة التسوق</h3>
+            <i class="fas fa-times close-cart" id="close-cart"></i>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <!-- سيتم إضافة عناصر السلة هنا -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>الإجمالي:</span>
+                <span id="cart-total">0 ج.م</span>
+            </div>
+            <button class="checkout-btn" id="checkout-btn">
+                <i class="fab fa-whatsapp"></i> إتمام الشراء عبر واتساب
+            </button>
+        </div>
+    </div>
     
     <div class="container">
         <div class="products" id="products-container">
@@ -711,7 +822,7 @@
             cartItems.innerHTML = '';
             
             if (cart.length === 0) {
-                cartItems.innerHTML = '<p style="text-align:center; padding:20px;">سلة التسوق فارغة</p>';
+                cartItems.innerHTML = '<div class="empty-cart"><i class="fas fa-shopping-cart" style="font-size: 40px; margin-bottom: 15px;"></i><p>سلة التسوق فارغة</p></div>';
                 return;
             }
             
@@ -723,13 +834,18 @@
                 
                 const cartItemHTML = `
                     <div class="cart-item">
-                        <img src="${item.image}" alt="${item.name}" width="50" height="50" style="object-fit:cover; border-radius:4px;">
-                        <div class="cart-item-info">
+                        <img src="${item.image}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-details">
                             <div class="cart-item-name">${item.name}</div>
-                            <div class="cart-item-price">${item.price} ج.م × ${item.quantity}</div>
-                        </div>
-                        <div class="cart-item-quantity">
-                            <i class="fas fa-trash remove-item" onclick="removeFromCart(${item.id})"></i>
+                            <div class="cart-item-price">${item.price} ج.م × ${item.quantity} = ${itemTotal} ج.م</div>
+                            <div class="cart-item-actions">
+                                <i class="fas fa-trash remove-item" onclick="removeFromCart(${item.id})"></i>
+                                <div class="cart-item-quantity">
+                                    <button class="quantity-btn minus" onclick="updateCartItemQuantity(${item.id}, -1)">-</button>
+                                    <input type="number" class="quantity-input" value="${item.quantity}" min="1" onchange="updateCartItemQuantityInput(${item.id}, this)">
+                                    <button class="quantity-btn plus" onclick="updateCartItemQuantity(${item.id}, 1)">+</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -741,6 +857,32 @@
             cartTotal.textContent = `${totalPrice} ج.م`;
         }
         
+        // تحديث كمية المنتج في السلة
+        function updateCartItemQuantity(productId, change) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                const newQuantity = item.quantity + change;
+                if (newQuantity > 0) {
+                    item.quantity = newQuantity;
+                    updateCart();
+                }
+            }
+        }
+        
+        // تحديث كمية المنتج في السلة من خلال حقل الإدخال
+        function updateCartItemQuantityInput(productId, input) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                const newQuantity = parseInt(input.value);
+                if (!isNaN(newQuantity) && newQuantity > 0) {
+                    item.quantity = newQuantity;
+                    updateCart();
+                } else {
+                    input.value = item.quantity;
+                }
+            }
+        }
+        
         // إزالة منتج من السلة
         function removeFromCart(productId) {
             cart = cart.filter(item => item.id !== productId);
@@ -749,13 +891,25 @@
         
         // إظهار/إخفاء السلة
         function showCart() {
-            const cartDropdown = document.getElementById('cart-dropdown');
-            cartDropdown.classList.add('show');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartContainer = document.getElementById('cart-container');
+            
+            cartOverlay.classList.add('show');
+            cartContainer.classList.add('show');
+            
+            // منع التمرير عند فتح السلة
+            document.body.style.overflow = 'hidden';
         }
         
         function hideCart() {
-            const cartDropdown = document.getElementById('cart-dropdown');
-            cartDropdown.classList.remove('show');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartContainer = document.getElementById('cart-container');
+            
+            cartOverlay.classList.remove('show');
+            cartContainer.classList.remove('show');
+            
+            // إعادة التمرير عند إغلاق السلة
+            document.body.style.overflow = 'auto';
         }
         
         // شراء المنتجات في السلة عبر واتساب
@@ -874,29 +1028,10 @@
             displayProducts();
             
             // أحداث السلة
-            document.getElementById('cart-icon').addEventListener('click', (e) => {
-                e.stopPropagation();
-                const cartDropdown = document.getElementById('cart-dropdown');
-                if (cartDropdown.classList.contains('show')) {
-                    hideCart();
-                } else {
-                    showCart();
-                }
-            });
-            
-            document.getElementById('close-cart').addEventListener('click', (e) => {
-                e.stopPropagation();
-                hideCart();
-            });
-            
+            document.getElementById('cart-icon').addEventListener('click', showCart);
+            document.getElementById('close-cart').addEventListener('click', hideCart);
+            document.getElementById('cart-overlay').addEventListener('click', hideCart);
             document.getElementById('checkout-btn').addEventListener('click', checkout);
-            
-            // إغلاق السلة عند النقر خارجها
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('#cart-dropdown') && !e.target.closest('#cart-icon')) {
-                    hideCart();
-                }
-            });
         });
     </script>
 </body>
