@@ -506,6 +506,38 @@
             margin-top: 30px;
         }
         
+        /* رسالة الإضافة إلى السلة */
+        .add-to-cart-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2ecc71;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .add-to-cart-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .add-to-cart-notification i {
+            font-size: 20px;
+        }
+        
+        .add-to-cart-notification.error {
+            background-color: #e74c3c;
+        }
+        
         @media (max-width: 992px) {
             .cart-container {
                 max-width: 350px;
@@ -527,6 +559,14 @@
             
             .cart-container {
                 max-width: 100%;
+            }
+            
+            .add-to-cart-notification {
+                right: 10px;
+                left: 10px;
+                bottom: 10px;
+                text-align: center;
+                justify-content: center;
             }
         }
         
@@ -642,6 +682,12 @@
         </div>
         <p>جميع الحقوق محفوظة &copy; 2025 A.b Electronic</p>
     </footer>
+    
+    <!-- رسالة الإضافة إلى السلة -->
+    <div class="add-to-cart-notification" id="add-to-cart-notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-message"></span>
+    </div>
     
     <script>
         // بيانات المنتجات
@@ -781,7 +827,7 @@
             
             // التحقق من الكمية المتاحة
             if (quantity > product.stock) {
-                alert(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`);
+                showNotification(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`, 'error');
                 return;
             }
             
@@ -801,10 +847,31 @@
             }
             
             updateCart();
-             //showCart();
+            showNotification(`تمت إضافة ${quantity} من ${product.name} إلى سلة التسوق`, 'success');
+        }
+        
+        // دالة لعرض الإشعار
+        function showNotification(message, type) {
+            const notification = document.getElementById('add-to-cart-notification');
+            const messageElement = document.getElementById('notification-message');
+            const icon = notification.querySelector('i');
             
-            // إظهار رسالة تأكيد
-            alert(`تمت إضافة ${quantity} من ${product.name} إلى سلة التسوق`);
+            // تغيير النمط حسب نوع الرسالة
+            notification.className = 'add-to-cart-notification';
+            if (type === 'error') {
+                notification.classList.add('error');
+                icon.className = 'fas fa-exclamation-circle';
+            } else {
+                icon.className = 'fas fa-check-circle';
+            }
+            
+            messageElement.textContent = message;
+            notification.classList.add('show');
+            
+            // إخفاء الرسالة بعد 3 ثواني
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2000);
         }
         
         // تحديث عرض السلة
@@ -914,7 +981,7 @@
         // شراء المنتجات في السلة عبر واتساب
         function checkout() {
             if (cart.length === 0) {
-                alert('سلة التسوق فارغة');
+                showNotification('سلة التسوق فارغة', 'error');
                 return;
             }
             
@@ -944,7 +1011,7 @@
             
             // التحقق من الكمية المتاحة
             if (quantity > product.stock) {
-                alert(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`);
+                showNotification(`الكمية المطلوبة (${quantity}) غير متوفرة. الكمية المتاحة: ${product.stock}`, 'error');
                 return;
             }
             
