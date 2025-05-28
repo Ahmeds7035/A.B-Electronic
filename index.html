@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A.B Electronic Shop - متجر إلكتروني</title>
     <link rel="icon" href="logo.jpeg" type="image/jpeg">
+    <!-- استخدم HTTPS في كل الروابط الخارجية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -1019,7 +1020,7 @@
             const message = `مرحباً، أريد شراء المنتج التالي:\n\nالمنتج: ${product.name}\nالكمية: ${quantity}\nالسعر للواحدة: ${product.price} ج.م\nالإجمالي: ${product.price * quantity} ج.م\n\nشكراً!`;
             const encodedMessage = encodeURIComponent(message);
             
-            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            window.open(`https://wa.met/201550461829?text=${encodedMessage}`, '_blank');
         }
         
         // تحريك السلايدر
